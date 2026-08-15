@@ -1,0 +1,7 @@
+node_modules/
+dist/
+coverage/
+*.tgz
+.ranobelib-cache/
+.ranobelib-sync/
+.DS_Store

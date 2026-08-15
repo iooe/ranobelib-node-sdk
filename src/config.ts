@@ -1,0 +1,31 @@
+export const TITLE_FIELDS = [
+  "background",
+  "eng_name",
+  "otherNames",
+  "summary",
+  "releaseDate",
+  "genres",
+  "tags",
+  "teams",
+  "authors",
+  "artists",
+  "chap_count",
+  "status_id",
+  "rate",
+] as const;
+
+export const DEFAULTS = {
+  apiBaseUrl: "https://api.cdnlibs.org/api",
+  siteId: "3",
+  sourceBaseUrl: "https://ranobelib.me",
+  timeoutMs: 30_000,
+  maxResponseBytes: 16 * 1024 * 1024,
+  maxConcurrency: 4,
+  minRequestIntervalMs: 800,
+  maxRetries: 6,
+  retryBaseDelayMs: 1_000,
+  retryMaxDelayMs: 60_000,
+  titleCacheTtlMs: 60 * 60 * 1000,
+  indexCacheTtlMs: 5 * 60 * 1000,
+  chapterCacheTtlMs: null,
+} as const;
