@@ -25,7 +25,7 @@ jobs:
         run: |
           set -euo pipefail
           curl --fail --location --retry 5 --retry-all-errors --connect-timeout 15 --max-time 120 \
-            'https://sdmntprnortheu.oaiusercontent.com/files/00000000-7028-81f4-99d5-2c009b17606c/raw?se=2026-08-15T18%3A53%3A22Z&sp=r&sv=2026-02-06&sr=b&scid=3fc2d61f-6321-5859-beb2-fd8f69089d2d&skoid=5c9dda00-298b-4376-81e9-b4568c8a3c0f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-14T23%3A43%3A53Z&ske=2026-08-15T23%3A43%3A53Z&sks=b&skv=2026-02-06&sig=SKmdoZM%2B4rn1%2BAImPIQMkrSHuwj3BUY0TE0amHfvZac%3D' \
+            'https://sdmntprnortheu.oaiusercontent.com/files/00000000-25c0-81f4-b450-5a646f577895/raw?se=2026-08-15T18%3A54%3A56Z&sp=r&sv=2026-02-06&sr=b&scid=587c0f10-75d7-579e-bde8-e8a096514f92&skoid=5c9dda00-298b-4376-81e9-b4568c8a3c0f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-15T06%3A47%3A34Z&ske=2026-08-16T06%3A47%3A34Z&sks=b&skv=2026-02-06&sig=zMe3EWUUEAndmapX1Y1sUPAPJ7MMBAewqgEjv2fTPQA%3D' \
             --output /tmp/ranobelib-node-sdk-transfer.zip
           echo 'b4f66418db7922498fe64dea7569b9718080cfcd18c64068ec7bb0d7cba1c293  /tmp/ranobelib-node-sdk-transfer.zip' | sha256sum --check
           mkdir -p /tmp/ranobelib-node-sdk-transfer
@@ -79,14 +79,15 @@ jobs:
           npm run check
           node scripts/live-smoke.mjs
 
-      - name: Commit production repository contents
+      - name: Commit validated source without workflow files
         shell: bash
         run: |
           set -euo pipefail
           rm -f .bootstrap
           rm -rf .transfer-import
-          rm -f .github/workflows/import-sdk.yml
-          rm -f .github/workflows/cross-repo-test.yml
+          rm -f .github/workflows/ci.yml
+          rm -f .github/workflows/live-smoke.yml
+          rm -f .github/workflows/publish.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
