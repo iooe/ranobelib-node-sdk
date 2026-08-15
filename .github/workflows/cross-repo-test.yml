@@ -1,0 +1,25 @@
+name: Temporary cross-repository access test
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout source repository with this repository token
+        uses: actions/checkout@v4
+        with:
+          repository: iooe/RanobeParser
+          ref: agent/ranobelib-node-sdk
+          token: ${{ github.token }}
+          path: source
+      - name: Verify source package
+        run: test -f source/package.json
