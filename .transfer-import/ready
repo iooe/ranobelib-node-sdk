@@ -3,3 +3,4 @@ source_ref=agent/ranobelib-node-sdk
 source_commit=47bb03ef9ef2a8736428a9ff0a0ba87dea926611
 artifact_id=9251335103
 archive_sha256=beb7258235ac9cf46527daa4c3c577167fddaf9c7ac1f62164c32a40fde8cf14
+attempt=2
