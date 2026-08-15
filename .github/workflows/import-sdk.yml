@@ -20,24 +20,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Verify and extract source archive
+      - name: Download and verify source archive
         shell: bash
         run: |
           set -euo pipefail
-          test "$(find .transfer-import -maxdepth 1 -name 'chunk-*' -type f | wc -l)" -eq 19
-          cat .transfer-import/chunk-* > /tmp/ranobelib-node-sdk.tar.gz
-          expected_sha="$(tr -d '\r\n' < .transfer-import/archive.sha256)"
-          actual_sha="$(sha256sum /tmp/ranobelib-node-sdk.tar.gz | awk '{print $1}')"
-          test "$actual_sha" = "$expected_sha"
-          expected_size="$(tr -d '\r\n' < .transfer-import/archive.size)"
-          actual_size="$(stat -c '%s' /tmp/ranobelib-node-sdk.tar.gz)"
-          test "$actual_size" = "$expected_size"
-          tar -xzf /tmp/ranobelib-node-sdk.tar.gz
+          curl --fail --location --retry 5 --retry-all-errors --connect-timeout 15 --max-time 120 \
+            'https://sdmntprnortheu.oaiusercontent.com/files/00000000-7028-81f4-99d5-2c009b17606c/raw?se=2026-08-15T18%3A53%3A22Z&sp=r&sv=2026-02-06&sr=b&scid=3fc2d61f-6321-5859-beb2-fd8f69089d2d&skoid=5c9dda00-298b-4376-81e9-b4568c8a3c0f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-14T23%3A43%3A53Z&ske=2026-08-15T23%3A43%3A53Z&sks=b&skv=2026-02-06&sig=SKmdoZM%2B4rn1%2BAImPIQMkrSHuwj3BUY0TE0amHfvZac%3D' \
+            --output /tmp/ranobelib-node-sdk-transfer.zip
+          echo 'b4f66418db7922498fe64dea7569b9718080cfcd18c64068ec7bb0d7cba1c293  /tmp/ranobelib-node-sdk-transfer.zip' | sha256sum --check
+          mkdir -p /tmp/ranobelib-node-sdk-transfer
+          unzip -q /tmp/ranobelib-node-sdk-transfer.zip -d /tmp/ranobelib-node-sdk-transfer
+          test "$(stat -c '%s' /tmp/ranobelib-node-sdk-transfer/ranobelib-node-sdk.tar.gz)" = '108711'
+          echo 'beb7258235ac9cf46527daa4c3c577167fddaf9c7ac1f62164c32a40fde8cf14  /tmp/ranobelib-node-sdk-transfer/ranobelib-node-sdk.tar.gz' | sha256sum --check
+          tar -xzf /tmp/ranobelib-node-sdk-transfer/ranobelib-node-sdk.tar.gz
 
       - name: Retarget package metadata to the new repository
         shell: bash
         run: |
           set -euo pipefail
+          rm -f ranobelib-node-sdk-chunk-*.b64
           node - <<'NODE'
           const fs = require('node:fs');
           const path = 'package.json';
@@ -74,7 +75,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npm install --ignore-scripts
+          npm install --ignore-scripts --no-audit --no-fund
           npm run check
           node scripts/live-smoke.mjs
 
