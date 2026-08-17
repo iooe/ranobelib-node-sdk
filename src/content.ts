@@ -300,7 +300,18 @@ function sanitizeAttributes(tag: string, raw: string, sourceBaseUrl: string): st
     const href = absoluteUrl(attributes.get("href") ?? null, sourceBaseUrl);
     if (href) entries.push(`href="${escapeAttribute(href)}"`, 'rel="noopener noreferrer"');
   } else if (tag === "img") {
-    const src = absoluteUrl(attributes.get("src") ?? null, sourceBaseUrl);
+    // RanobeLib's rich-text output is normally eager, but legacy chapters can
+    // carry a lazy-image URL only in one of these attributes.  Normalize all
+    // supported forms into `src` so downstream importers do not silently drop
+    // illustrations when localising chapter media.
+    const src = absoluteUrl(
+      attributes.get("src") ??
+        attributes.get("data-src") ??
+        attributes.get("data-lazy-src") ??
+        attributes.get("data-original") ??
+        null,
+      sourceBaseUrl,
+    );
     if (!src) return "";
     entries.push(`src="${escapeAttribute(src)}"`);
     const alt = attributes.get("alt");

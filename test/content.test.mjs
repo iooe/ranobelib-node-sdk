@@ -55,3 +55,16 @@ test("HTML chapter content is normalized and converted to readable text", () => 
   assert.equal(content.text, "Title\nFirst\nSecond & third\nMap");
   assert.equal(htmlToText(content.html), content.text);
 });
+
+test("HTML chapter content keeps legacy lazy-loaded illustrations", () => {
+  const content = normalizeChapterContent(
+    '<p>Before</p><img data-src="/uploads/legacy-art.webp" alt="Legacy art"><img data-original="https://cdn.example/map.png">',
+    [],
+    "https://ranobelib.me",
+  );
+  assert.equal(
+    content.html,
+    '<p>Before</p><img src="https://ranobelib.me/uploads/legacy-art.webp" alt="Legacy art" loading="lazy"><img src="https://cdn.example/map.png" alt="" loading="lazy">',
+  );
+  assert.equal(content.text, "Before\nLegacy art");
+});
